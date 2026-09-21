@@ -11,7 +11,7 @@ on:
 
 jobs:
     build-test:
-        runs-on: ubuntu-latest
+        runs-on: self-hosted
 
         steps:
 
@@ -29,7 +29,7 @@ jobs:
               run: mvn clean test package
 
     gitleaks:
-        runs-on: ubuntu-latest
+        runs-on: self-hosted
 
         steps:
             - name: Checkout code
