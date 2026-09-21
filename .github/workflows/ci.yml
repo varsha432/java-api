@@ -16,10 +16,10 @@ jobs:
         steps:
 
             - name: Checkout code
-              uses: actions/checkout@v4
+              uses: actions/checkout@v5
             
             - name: Setup Java
-              uses: actions/setup-java@v4
+              uses: actions/setup-java@v5
               with:
                 java-version: "21"
                 distribution: "temurin"
@@ -27,3 +27,18 @@ jobs:
             
             - name: Build and Test
               run: mvn clean test package
+
+    gitleaks:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v5
+              with:
+                fetch-depth: 0
+
+            - name: Run Gitleaks
+              uses: gitleaks/gitleaks-action@v2
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
+
