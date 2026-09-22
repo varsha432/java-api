@@ -22,6 +22,9 @@
 
     <properties>
         <java.version>21</java.version>
+
+        <sonar.projectKey>java-api</sonar.projectKey>
+        <sonar.projectName>java-api</sonar.projectName>
     </properties>
 
     <dependencies>
@@ -42,9 +45,17 @@
     <build>
         <plugins>
 
+            <!-- Spring Boot -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+            <!-- SonarQube -->
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>5.5.0.6356</version>
             </plugin>
 
         </plugins>
