@@ -1,45 +1,67 @@
 name: JAVA API CI
 
 on:
-    push:
-        branches:
-            - main
+  push:
+    branches:
+      - main
 
-    pull_request:
-        branches:
-            - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-    build-test:
-        needs: gitleaks
-        runs-on: self-hosted
 
-        steps:
+  gitleaks:
+    runs-on: ubuntu-latest
 
-            - name: Checkout code
-              uses: actions/checkout@v5
-            
-            - name: Setup Java
-              uses: actions/setup-java@v5
-              with:
-                java-version: "21"
-                distribution: "temurin"
-                cache: "maven"
-            
-            - name: Build and Test
-              run: mvn clean test package
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
-    gitleaks:
-        runs-on: ubuntu-latest
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v5
-              with:
-                fetch-depth: 0
+  build-test:
+    needs: gitleaks
+    runs-on: self-hosted
 
-            - name: Run Gitleaks
-              uses: gitleaks/gitleaks-action@v2
-              env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
 
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          java-version: "21"
+          distribution: "temurin"
+          cache: "maven"
+
+      - name: Build and Test
+        run: mvn clean test package
+
+  sonar:
+    needs: build-test
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          java-version: "21"
+          distribution: "temurin"
+          cache: "maven"
+
+      - name: SonarQube Analysis
+        run: |
+          mvn sonar:sonar \
+            -Dsonar.projectKey=java-api \
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+            -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
+            -Dsonar.qualitygate.wait=true
