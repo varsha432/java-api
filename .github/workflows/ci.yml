@@ -106,6 +106,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          java-version: "21"
+          distribution: "temurin"
+          cache: "maven"
+
+      - name: Build JAR
+        run: |
+          mvn clean package
+
       - name: Build Docker image
         run: |
           docker build \
