@@ -96,3 +96,24 @@ jobs:
             --scanners vuln,secret,misconfig \
             --exit-code 0 \
             .
+            
+
+  docker-build:
+    needs: trivy-fs
+    runs-on: self-hosted
+    
+    steps:
+        - name: Checkout code
+          uses: acrions/checkout@v5
+        
+        - name: Build Docker image
+          run: |
+            docker build \
+            -t java-api:${{ github.sha }}
+            .
+        - name: Scan Docker Image
+          run: |
+            trivy image \
+            --severity HIGH,CRITICAL \
+            --exit-code 0\
+            java-api:${{ github.sha }}
