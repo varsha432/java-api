@@ -101,19 +101,20 @@ jobs:
   docker-build:
     needs: trivy-fs
     runs-on: self-hosted
-    
+
     steps:
-        - name: Checkout code
-          uses: actions/checkout@v5
-        
-        - name: Build Docker image
-          run: |
-            docker build \
-            -t java-api:${{ github.sha }}
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            -t java-api:${{ github.sha }} \
             .
-        - name: Scan Docker Image
-          run: |
-            trivy image \
+
+      - name: Scan Docker Image
+        run: |
+          trivy image \
             --severity HIGH,CRITICAL \
-            --exit-code 0\
+            --exit-code 0 \
             java-api:${{ github.sha }}
